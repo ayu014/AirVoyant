@@ -2,34 +2,13 @@ import os
 import requests
 from pprint import pprint
 from requests.auth import HTTPBasicAuth
-
-# SHEET_GET_EP = "https://api.sheety.co/dbba13af5f31d6764ac91e103684a06a/flightDeals/prices"
-
-# username = os.environ.get("SHEETY_USERNAME")
-# password = os.environ.get("SHEETY_PASSWORD")
-# basic = HTTPBasicAuth(username= username,password=password)
+from datetime import datetime, timedelta
 
 
-# with requests.get(url=SHEET_GET_EP,auth=basic) as response:
-#     response.raise_for_status()
-#     destination_data = response.json()["prices"]
-#     pprint(destination_data)
-#     for data in destination_data:
-#         rowid = data["id"]
-#         Edit_EP = f"https://api.sheety.co/dbba13af5f31d6764ac91e103684a06a/flightDeals/prices/{rowid}"
-#         sheet_inputs = {
-#             "price" : {
-#                 "city" : data["city"],
-#                 "lowestPrice" : data["lowestPrice"],
-#                 "iataCode" : "Testing"
 
-#             }
-#         }
 
-#         with requests.put(url = Edit_EP,json = sheet_inputs,auth=basic) as sheet_response:
-#             sheet_response.raise_for_status()
-#             print("updated")
-
+########################################################################################
+FLIGHT_ENDPOINT = "https://test.api.amadeus.com/v2/shopping/flight-offers"
 def get_new_token():
     api_key = os.environ.get("AMADEUS_API_KEY")
     api_secret = os.environ.get("AMADEUS_API_SECRET")
@@ -41,27 +20,44 @@ def get_new_token():
         "client_id" : api_key,
         "client_secret" : api_secret
     }
-    response = requests.post(url="https://test.api.amadeus.com/v1/security/oauth2/token",headers=header,data=body)
-    return response.json()["access_token"]
+    with  requests.post(url="https://test.api.amadeus.com/v1/security/oauth2/token",headers=header,data=body) as response:
+        return response.json()["access_token"]
 
 
-
-def get_destination_codes():
+def check_flights():
     token = get_new_token()
-    headers = {
+    now = datetime.now()
+    tomorrow_date = now + timedelta(days=1)
+    tomorrow_date_str = tomorrow_date.strftime("%Y-%m-%d")
+    return_date = tomorrow_date + timedelta(days=180)
+    return_date_str = return_date.strftime("%Y-%m-%d")
+
+    headersx = {
         "Authorization" : f"Bearer {token}"
     }
     query = {
-        "keyword" : "PARIS",
-        "max" : "2",
-        "include" :"AIRPORTS"
-
+        "originLocationCode" : "LON",
+        "destinationLocationCode" : "PAR",
+        "departureDate" : tomorrow_date_str,
+        "returnDate" : return_date_str,
+        "adults" : 1,
+        "nonStop" : "true",
+        "currencyCode" : "GBP",
+        "max" : 10
     }
-    with requests.get(url="https://test.api.amadeus.com/v1/reference-data/locations/cities",headers=headers,params=query) as response:
-        code = response.json()["data"][0]["iataCode"]
-        print(code)
 
-get_destination_codes()
+    with requests.get(url=FLIGHT_ENDPOINT,headers=headersx,params=query) as response:
+        response.status_code
+        print()
+        print(response.text)
+
+
+
+check_flights()
+
+
+
+
 
 
 

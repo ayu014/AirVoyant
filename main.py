@@ -1,5 +1,5 @@
 #This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
-import requests
+import time
 from data_manager import DataManager
 from flight_search import FlightSearch
 from pprint import pprint
@@ -14,7 +14,12 @@ for row in sheet_data:
         city = row["city"]
         row["iataCode"] = flight_search.get_destination_codes(city=city)
         data_manager.update_destination_codes(row)
-        
+        time.sleep(2)
+    flights = flight_search.check_flights(row)
+    
+    
+    
+
 
 
 

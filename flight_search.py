@@ -1,10 +1,11 @@
 import os
 import requests
+from datetime import datetime, timedelta
 
 
 TOEKN_EP = "https://test.api.amadeus.com/v1/security/oauth2/token"
 IATA_ENDPOINT = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
-OFFERS_ENDPOINT = "https://test.api.amadeus.com/v1/shopping/flight-offers"
+FLIGHT_ENDPOINT = "https://test.api.amadeus.com/v2/shopping/flight-offers"
 
 
 
@@ -15,6 +16,13 @@ class FlightSearch:
         self._api_key = os.environ.get("AMADEUS_API_KEY")
         self._api_secret = os.environ.get("AMADEUS_API_SECRET")
         self._token = self._get_new_token()
+
+
+        self.now = datetime.now()
+        self.tomorrow_date = self.now + timedelta(days=1)
+        self.tomorrow_date_str = self.tomorrow_date.strftime("%Y-%m-%d")
+        self.return_date = self.tomorrow_date + timedelta(days=180)
+        self.return_date_str = self.return_date.strftime("%Y-%m-%d")
 
     def _get_new_token(self):
         header = {
@@ -51,6 +59,33 @@ class FlightSearch:
                 return "N/A"
             return code
         
+    def check_flights(self,row):
+        headers = {
+            "Authorization" : f"Bearer {self._token}"
+        }
+        query = {
+            "originLocationCode" : "LON",
+            "destinationLocationCode" : row["iataCode"],
+            "departureDate" : self.tomorrow_date_str,
+            "returnDate" : self.return_date_str,
+            "adults" : 1,
+            "nonStop" : "true",
+            "currencyCode" : "GBP",
+            "max" : 10
+        }
+        with requests.get(url=FLIGHT_ENDPOINT,headers=headers,params=query) as response:
+            if response.status_code != 200:
+                print(f"Check Flights : Response Code : {response.status_code}")
+                print("There was a problem with flight search.\nFor details on status code check documentation.")
+                print(response.text)
+                return None
+            return response.json()
+        
+
+
+
+
+    
 
 
 
