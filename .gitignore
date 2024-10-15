@@ -1,4 +1,6 @@
 .env
 .venv
+test.py
 data.json
 __pycache__
+
