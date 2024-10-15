@@ -41,7 +41,7 @@ To get started, follow these steps:
     ```
     AMADEUS_API_KEY = <your_api_key>
     AMADEUS_API_SECRET = <your_api_secret>
-    "TWILIO_ACCOUNT_SID = <your_unique_sid>
+    TWILIO_ACCOUNT_SID = <your_unique_sid>
     TWILIO_AUTH_TOKEN = <your_unique_token>
     TWILIO_API_KEY = <your_api_key>
     TWILIO_MOBILE_NUMBER = <your_twilio_generated_number>
