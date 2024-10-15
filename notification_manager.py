@@ -3,8 +3,8 @@ from twilio.rest import Client
 account_sid = os.environ.get("account_sid")
 auth_token = os.environ.get("auth_token")
 api_key = os.environ.get("API_KEY")
-from_n = '+18706003250'
-to_n = '+916280059961'
+from_n = os.environ.get("from_n")
+to_n = os.environ.get("to_n")
 
 class NotificationManager(Client):
     #This class is responsible for sending notifications with the deal flight details
